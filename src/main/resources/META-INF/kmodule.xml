@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule
+  xmlns="http://www.drools.org/xsd/kmodule">
+
+
+  <kbase name="buyRuleKB" packages="rules.basebuy">
+    <ksession name="buyRuleKS"/>
+  </kbase>
+  <kbase name="buyDetailRuleKB" packages="rules.attrbuy">
+    <ksession name="buyDetailRuleKS"/>
+  </kbase>
+</kmodule>

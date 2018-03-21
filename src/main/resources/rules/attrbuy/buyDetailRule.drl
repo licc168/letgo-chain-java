@@ -1,0 +1,106 @@
+package com.licc.letsgo
+import com.licc.letsgo.model.Rule
+import  com.licc.letsgo.services.LetsgoService
+import  com.licc.letsgo.util.SpringContext
+import com.licc.letsgo.res.petdetail.PetDetailData
+import com.licc.letsgo.util.ResponseVo
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory
+import com.licc.letsgo.res.petdetail.PetDetailAttr
+import java.util.List;
+dialect  "mvel"
+
+global com.licc.letsgo.services.LetsgoService letsgoService;
+global com.licc.letsgo.model.User user;
+global  org.slf4j.Logger logger;
+
+
+
+
+rule "属性-规则"
+  salience 1
+    when sale:Rule(petDetailData!=null&&attr(petsOnSale.rareDegree,petDetailData))
+    then
+      letsgoService.buy(sale.getPetsOnSale(),user);
+end
+
+function boolean attr(int rareDegree, PetDetailData detail){
+
+float amount = Float.parseFloat(detail.getAmount());
+String body = detail.getAttributes().get(0).getValue();
+String eye = detail.getAttributes().get(2).getValue();
+String mouth = detail.getAttributes().get(4).getValue();
+boolean flag = false;
+int length = getXY(detail);
+switch (rareDegree){
+
+    case 3:
+
+         switch (length){
+           case 4:
+                if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                      flag =   amount<40000?true:false;
+                      if(!flag&&"甜蜜蜜".equals(mouth)){
+                          flag =   amount<50000?true:false;
+                      }
+                      if(!flag &&"樱桃".equals(mouth)){
+                          flag =   amount<80000?true:false;
+                      }
+                }
+               if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)){
+                      flag =   amount<4500?true:false;
+                }
+               if(!flag&&"角鲸".equals(body)&& "白眉".equals(eye)){
+                      flag =   amount<8000?true:false;
+                }
+                break;
+            case 5:
+                flag =   amount<10000?true:false;
+                if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                  flag =   amount<80000?true:false;
+                    if(!flag&&"甜蜜蜜".equals(mouth)){
+                      flag =   amount<90000?true:false;
+                     }
+                    if(!flag&&"樱桃".equals(mouth)){
+                      flag =   amount<100000?true:false;
+                     }
+                }
+                if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)){
+                      flag =   amount<13000?true:false;
+                 }
+          }
+        break;
+
+
+
+}
+return  flag;
+
+
+
+}
+
+function  int getXY(PetDetailData detail){
+   int count = 0;
+   List<PetDetailAttr> list = detail.getAttributes();
+   for(PetDetailAttr attr:list){
+    String rareDegree = attr.getRareDegree();
+    if("稀有".equals(rareDegree)){
+      count = count+1;
+    }
+   }
+    return count;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

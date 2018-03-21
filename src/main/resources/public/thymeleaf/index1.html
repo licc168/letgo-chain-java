@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+<title>首页</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	</head>
+
+	<body>
+	 <ul th:each="user: ${users}">
+	 <li th:text="${user.name}"></li>
+
+	 <button th:data="${user.cookie}"  th:value="${user.name}" onclick="start(this)" >运行</button>
+	 	<button  th:value="${user.name}" onclick="stop(this)"   >停止</button>
+
+   </ul>
+
+
+
+  </body>
+
+</html>
+ <script src="/static/js/jquery-3.3.1.min.js"></script>
+<script>
+   function  start(elm) {
+      $this = jQuery(elm);
+      var name = $this.attr("value");
+      var cookie = $this.attr("data");
+      $.post({
+      url:"/start",
+      dataType:"json",
+      data:{name:name,cookie:cookie},
+      success:function(data) {
+        alert(data.desc)
+      },
+      error:function() {
+        alert("系统异常")
+      }
+
+      })
+
+   }
+  function  stop(elm) {
+      $this = jQuery(elm);
+      var name = $this.attr("value");
+      $.post({
+      url:"/stop",
+      dataType:"json",
+      data:{name:name},
+      success:function(data) {
+        alert(data.desc)
+      },
+      error:function() {
+        alert("系统异常")
+      }
+
+      })
+
+   }
+
+</script>
