@@ -1,0 +1,48 @@
+package com.licc.letsgo
+import com.licc.letsgo.model.Rule
+import com.licc.letsgo.services.LetsgoService
+import com.licc.letsgo.util.SpringContext
+import com.licc.letsgo.res.petdetail.PetDetailData
+import com.licc.letsgo.util.ResponseVo
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.licc.letsgo.model.User
+dialect  "mvel"
+global com.licc.letsgo.services.LetsgoService letsgoService;
+global com.licc.letsgo.model.User user;
+global org.slf4j.Logger logger;
+
+rule "生日-规则"
+ salience 1
+    when
+      sale:Rule(brith(petsOnSale.id,Float.parseFloat(petsOnSale.amount),petsOnSale.rareDegree,logger))
+    then
+      letsgoService.buyAll("生日-规则",sale.getPetsOnSale(),user);
+end
+
+
+
+//生日靓号
+function boolean brith(String id,float amount,int rareDegree,Logger logger){
+    boolean flag = false;
+    if(id.matches("(19(7|8|9)|200)\\d{1}(0[1-9]|1[0-2])(0[1-9]|((1|2)[0-9])|30)")&&
+               !id.matches("\\d{4}02(29|30)")){
+          logger.info("生日规则：【id:"+id+"】【金额:"+amount+"】【级别:"+rareDegree+"】");
+          switch (rareDegree){
+              case 0:
+                  flag =  amount<=30000; break;
+              case 1:
+                  flag =  amount<=30000;break;
+              case 2:
+                  flag =  amount<=30000;break;
+              case 3:
+                  flag =  amount<=30000;break;
+              case 4:
+                  flag =  amount<200000;break;
+              case 5:
+                  flag =  amount<2000000;break;
+              }
+    }
+
+  return  flag;
+}

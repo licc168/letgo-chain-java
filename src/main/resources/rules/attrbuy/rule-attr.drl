@@ -1,0 +1,368 @@
+package com.licc.letsgo
+import com.licc.letsgo.model.Rule
+import  com.licc.letsgo.services.LetsgoService
+import  com.licc.letsgo.util.SpringContext
+import com.licc.letsgo.res.petdetail.PetDetailData
+import com.licc.letsgo.util.ResponseVo
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory
+import com.licc.letsgo.res.petdetail.PetDetailAttr
+import com.licc.letsgo.res.petdata.PetsOnSale
+
+import java.util.List;
+dialect  "mvel"
+
+global com.licc.letsgo.services.LetsgoService letsgoService;
+global com.licc.letsgo.model.User user;
+global  org.slf4j.Logger logger;
+
+rule "属性-规则"
+
+    when sale:Rule(petDetailData!=null&&attr(petsOnSale.rareDegree,petsOnSale,petDetailData,logger))
+    then
+      letsgoService.buyAll("属性-规则",sale.getPetsOnSale(),user);
+end
+
+
+/**
+body:体型
+eye:眼睛
+mouth：嘴巴
+dupiColor：肚皮色
+bodyColor：身体色
+*/
+function boolean attr(int rareDegree, PetsOnSale petsale, PetDetailData detail,Logger logger){
+    float amount = Float.parseFloat(detail.getAmount());
+    String body = detail.getAttributes().get(0).getValue();
+    String huawen = detail.getAttributes().get(1).getValue();
+    String eye = detail.getAttributes().get(2).getValue();
+    String mouth = detail.getAttributes().get(4).getValue();
+    String dupiColor = detail.getAttributes().get(5).getValue();
+    String bodyColor = detail.getAttributes().get(6).getValue();
+    int generation = detail.getGeneration();
+    boolean isCooling =  petsale.getIsCooling();
+    String coolingInterval = petsale.getCoolingInterval();
+    boolean flag = false;
+    int length = getXY(detail);
+    if(generation == 0 && !isCooling && "0分钟".equals(coolingInterval)){
+
+        switch (rareDegree){
+            case 0:
+                  if(("角鲸".equals(body)||"天使".equals(body)||"中分".equals(body)||"皮卡".equals(body))&&"米色".equals(bodyColor)){
+                    if("白眉斗眼".equals(eye)||"小对眼".equals(eye)){
+                        if("撇嘴".equals(mouth)||"樱桃".equals(mouth)||"橄榄".equals(mouth)){
+                            return  amount<800;
+                        }
+                    }
+                  }
+            case 1:
+                  if(("角鲸".equals(body)||"天使".equals(body)||"中分".equals(body)&&"皮卡".equals(body))&&"米色".equals(bodyColor)){
+                                     if("白眉斗眼".equals(eye)||"小对眼".equals(eye)){
+                                         if("撇嘴".equals(mouth)||"樱桃".equals(mouth)||"橄榄".equals(mouth)){
+                                             return  amount<800;
+                                         }
+                                     }
+                      }
+                 if("天使".equals(body)){
+                    if("白眉斗眼".equals(eye)){
+                         flag =   amount<=1000;
+                      }
+
+                    if(!flag &&"樱桃".equals(mouth)){
+                      flag =   amount<=500;
+                    }
+                 }
+                  if(!flag&&"天使".equals(body)&&"小对眼".equals(eye)){
+                         flag =   amount<=500;
+                          if(!flag &&"樱桃".equals(mouth)){
+                                    flag =   amount<=6000;
+                                    if(!flag &&"无".equals(huawen)){
+                                     flag =   amount<=10000;
+                                    }
+                              }
+                   }
+                    if(!flag&&"角鲸".equals(body)&&"白眉斗眼".equals(eye)){
+                         flag =   amount<=500;
+                 }
+                  if(!flag&&"角鲸".equals(body)&&"小对眼".equals(eye)){
+                         flag =   amount<=500;
+                          if(!flag &&"樱桃".equals(mouth)){
+                            flag =   amount<=5000;
+                            if(!flag &&"无".equals(huawen)){
+                             flag =   amount<=6000;
+                            }
+                           }
+                   }
+            return flag;
+            case 2:
+                    if(("角鲸".equals(body)||"天使".equals(body)||"中分".equals(body)&&"皮卡".equals(body))&&"米色".equals(bodyColor)){
+                                     if("白眉斗眼".equals(eye)||"小对眼".equals(eye)){
+                                         if("撇嘴".equals(mouth)||"樱桃".equals(mouth)||"橄榄".equals(mouth)){
+                                             return  amount<1000;
+                                         }
+                       }
+                      }
+                if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                    logger.info("属性规则-【id:"+detail.getId()+"】"+"【"+amount+"  "+ eye+"  "+mouth+"】"+"【级别："+rareDegree+"】");
+                    flag =   amount<=4000;
+                    if(!flag&&"甜蜜蜜".equals(mouth)){
+                        flag =   amount<=4000;
+                    }
+                    if(!flag &&"樱桃".equals(mouth)){
+                      flag =   amount<=80000;
+                    }
+                }
+               if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)&&"樱桃".equals(mouth)){
+                       flag =   amount<=20000;
+                }
+               if(!flag&&"无".equals(huawen)&&"起司".equals(dupiColor)){
+
+                    flag =   amount<=300;
+                    if(!flag&&"米色".equals(bodyColor)){
+                      flag =   amount<=1000;
+                    }
+               }
+            return flag;
+            case 3:
+                switch (length){
+                    case 4:
+                    if(("天使".equals(body)||"中分".equals(body)&&"皮卡".equals(body))&&"米色".equals(bodyColor)){
+                                 if("白眉斗眼".equals(eye)||"小对眼".equals(eye)){
+                                     if("撇嘴".equals(mouth)||"樱桃".equals(mouth)||"橄榄".equals(mouth)){
+                                         return  amount<6000;
+                                     }
+                                           }
+                             }
+                        if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                            logger.info("属性规则-4稀【id:"+detail.getId()+"】"+"【"+amount+"  "+ eye+"  "+mouth+"】"+"【级别："+rareDegree+"】");
+                            flag =   amount<=35000;
+                            if(!flag&&"甜蜜蜜".equals(mouth)){
+                              flag =   amount<=40000;
+                            }
+                            if(!flag &&"樱桃".equals(mouth)){
+                              flag =   amount<=300000;
+                            }
+                        }
+                        if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)){
+                            flag =   amount<=15000;
+                            if(!flag&&"樱桃".equals(mouth)){
+                                flag =   amount<=100500;
+                            }
+                        }
+                        if(!flag&&"角鲸".equals(body)&& "小对眼".equals(eye)){
+                                  flag =   amount<=8000;
+                                  if(!flag&&"樱桃".equals(mouth)){
+                                     flag =   amount<=90500;
+                                    }
+                           }
+                       if(!flag&&"角鲸".equals(body)&& "白眉斗眼".equals(eye)){
+                            flag =   amount<=8000;
+                            if(!flag&&"樱桃".equals(mouth)){
+                               flag =   amount<=90500;
+                              }
+                        }
+                        if(!flag&&"樱桃".equals(mouth)&& "白眉斗眼".equals(eye)){
+                            flag =   amount<=20000;
+
+                        }
+                       if(!flag&&"无".equals(huawen)&&"起司".equals(dupiColor)){
+
+                           if(!flag&&"米色".equals(bodyColor)){
+                             flag =   amount<=10000;
+                           }
+                         }
+                       break;
+                    case 5:
+                        if(("天使".equals(body)||"中分".equals(body)&&"皮卡".equals(body))&&"米色".equals(bodyColor)){
+                             if("白眉斗眼".equals(eye)||"小对眼".equals(eye)){
+                                 if("撇嘴".equals(mouth)||"樱桃".equals(mouth)||"橄榄".equals(mouth)){
+                                     return  amount<30000;
+                                 }
+                                }
+                            }
+                        flag =   amount<=16000;
+                        if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                            logger.info("属性规则-5稀【id:"+detail.getId()+"】"+"【"+amount+"  "+ eye+"  "+mouth+"】"+"【级别："+rareDegree+"】");
+                            flag =   amount<=200000;
+                            if(!flag&&"甜蜜蜜".equals(mouth)){
+                              flag =   amount<=200000;
+                             }
+                            if(!flag&&"樱桃".equals(mouth)){
+                              flag =   amount<=1000000;
+                             }
+                        }
+                        if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)){
+                            flag =   amount<=98000;
+                            if(!flag&&"樱桃".equals(mouth)){
+                             flag =amount<=400500;
+                            }
+                        }
+                         if(!flag&&"樱桃".equals(mouth)&& "白眉斗眼".equals(eye)){
+                                flag =   amount<=120000;
+
+                           }
+                          if(!flag&&"角鲸".equals(body)&& "白眉斗眼".equals(eye)){
+                            flag =   amount<=40000;
+                            if(!flag&&"樱桃".equals(mouth)){
+                               flag =   amount<=400500;
+                              }
+                        }
+
+                }
+
+            return flag;
+            case 4:
+
+               if("白眉斗眼".equals(eye)||"小对眼".equals(eye)){
+                   flag =   amount<=650000;
+
+                  }
+                  if("天使".equals(body)){
+                       flag =   amount<=580000;
+
+                    }
+                   if("樱桃".equals(mouth)){
+                        flag =   amount<=533000;
+                     }
+                   if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)){
+                     flag =   amount<=1008000;
+                     if(!flag&&"樱桃".equals(mouth)){
+                         flag =amount<=2000500;
+                      }
+                   }
+                   if(!flag&&"角鲸".equals(body)&& "白眉斗眼".equals(eye)){
+                          flag =   amount<=800000;
+                         if(!flag&&"樱桃".equals(mouth)){
+                            flag =   amount<=1400500;
+                           }
+                    }
+                 if(!flag&&"樱桃".equals(mouth)&& "白眉斗眼".equals(eye)){
+                       flag =   amount<=108000;
+                  }
+                   if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                      flag =   amount<=108000;
+                      if(!flag&&"樱桃".equals(mouth)){
+                           flag =amount<=2000500;
+                         }
+                   }
+                  if(length == 7){
+                      flag =   amount<=1201000;
+                  }
+
+                }
+    }else{
+     switch (rareDegree){
+            case 2:
+                if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                    logger.info("属性规则-【id:"+detail.getId()+"】"+"【"+amount+"  "+ eye+"  "+mouth+"】"+"【级别："+rareDegree+"】");
+                    flag =   amount<=2000;
+                    if(!flag&&"甜蜜蜜".equals(mouth)){
+                        flag =   amount<=2000;
+                    }
+                    if(!flag &&"樱桃".equals(mouth)){
+                      flag =   amount<=20000;
+                    }
+                }
+               if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)&&"樱桃".equals(mouth)){
+                       flag =   amount<=1000;
+                }
+            return  flag;
+            case 3:
+                switch (length){
+                    case 4:
+                        if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                            logger.info("属性规则-4稀【id:"+detail.getId()+"】"+"【"+amount+"  "+ eye+"  "+mouth+"】"+"【级别："+rareDegree+"】");
+                            flag =   amount<=16000;
+                            if(!flag&&"甜蜜蜜".equals(mouth)){
+                              flag =   amount<=16000;
+                            }
+                            if(!flag &&"樱桃".equals(mouth)){
+                              flag =   amount<=100000;
+                            }
+                        }
+                        if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)){
+                            flag =   amount<=3500;
+                            if(!flag&&"樱桃".equals(mouth)){
+                                flag =   amount<=5000;
+                            }
+                        }
+                       if(!flag&&"天使".equals(body)&& "樱桃".equals(eye)){
+                              flag =   amount<=50000;
+                        }
+                       break;
+                    case 5:
+                        flag =   amount<=5000;
+                        if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                            logger.info("属性规则-5稀【id:"+detail.getId()+"】"+"【"+amount+"  "+ eye+"  "+mouth+"】"+"【级别："+rareDegree+"】");
+                            flag =   amount<=60000;
+                            if(!flag&&"甜蜜蜜".equals(mouth)){
+                              flag =   amount<=60000;
+                             }
+                            if(!flag&&"樱桃".equals(mouth)){
+                              flag =   amount<=300000;
+                             }
+                        }
+                        if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)){
+                            flag =   amount<=30000;
+                            if(!flag&&"樱桃".equals(mouth)){
+                             flag =amount<=260500;
+                            }
+                        }
+                          if(!flag&&"樱桃".equals(mouth)&& "白眉斗眼".equals(eye)){
+                                flag =   amount<=45000;
+                                if(!flag&&"角鲸".equals(body)){
+                                   flag =   amount<160500;
+                                  }
+                            }
+                    }
+            return  flag;
+            case 4:
+                   if(!flag&&"天使".equals(body)&& "小对眼".equals(eye)){
+                     flag =   amount<308000;
+                     if(!flag&&"樱桃".equals(mouth)){
+                         flag =amount<400500;
+                      }
+                   }
+                   if(!flag&&"天使".equals(body)&& "白眉斗眼".equals(eye)){
+                      flag =   amount<508000;
+                   }
+                  if(length == 7){
+                      flag =   amount<701000;
+                  }
+
+                }
+
+
+
+
+}
+return  flag;
+
+
+
+}
+
+function  int getXY(PetDetailData detail){
+   int count = 0;
+   List<PetDetailAttr> list = detail.getAttributes();
+   for(PetDetailAttr attr:list){
+    String rareDegree = attr.getRareDegree();
+    if("稀有".equals(rareDegree)){
+      count = count+1;
+    }
+   }
+    return count;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

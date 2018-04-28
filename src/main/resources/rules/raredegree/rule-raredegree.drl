@@ -1,0 +1,49 @@
+package com.licc.letsgo
+import com.licc.letsgo.model.Rule
+import com.licc.letsgo.services.LetsgoService
+import com.licc.letsgo.util.SpringContext
+import com.licc.letsgo.util.ResponseVo
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.licc.letsgo.model.User
+import com.licc.letsgo.res.petdata.PetsOnSale
+
+dialect  "mvel"
+global com.licc.letsgo.services.LetsgoService letsgoService;
+global com.licc.letsgo.model.User user;
+global org.slf4j.Logger logger;
+
+
+rule "级别-规则"
+ salience 1
+    when
+      sale:Rule(rareDegree(sale.petsOnSale))
+    then
+      letsgoService.buyAll("级别-规则",sale.getPetsOnSale(),user);
+end
+
+
+function boolean rareDegree(PetsOnSale petsale){
+    boolean flag = false;
+    int generation = petsale.getGeneration();
+    int rareDegree = petsale.getRareDegree();
+    Float amount = Float.parseFloat(petsale.getAmount());
+    boolean isCooling =  petsale.getIsCooling();
+    String coolingInterval = petsale.getCoolingInterval();
+    if(generation == 0 && !isCooling && "0分钟".equals(coolingInterval)){
+         switch (rareDegree){
+
+            case  3:   flag = amount<2000;break;
+            case  4:   flag = amount<480000;break;
+         }
+    }else{
+         switch (rareDegree){
+
+            case  3:   flag = amount<1000;break;
+            case  4:   flag = amount<200000;break;
+         }
+
+    }
+    return  flag;
+
+}

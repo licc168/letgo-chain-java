@@ -9,13 +9,12 @@
 	</head>
 
 	<body>
-	 <ul th:each="user: ${users}">
-	 <li th:text="${user.name}"></li>
 
-	 <button th:data="${user.cookie}"  th:value="${user.name}" onclick="start(this)" >运行</button>
-	 	<button  th:value="${user.name}" onclick="stop(this)"   >停止</button>
 
-   </ul>
+	 <button  onclick="buyFrist(this)"   >买</button>
+     <button  onclick="buyLast(this)"   >买</button>
+
+
 
 
 
@@ -26,8 +25,7 @@
 <script>
    function  start(elm) {
       $this = jQuery(elm);
-      var name = $this.attr("value");
-      var cookie = $this.attr("data");
+
       $.post({
       url:"/start",
       dataType:"json",
@@ -42,13 +40,12 @@
       })
 
    }
-  function  stop(elm) {
+  function  buyFrist(elm) {
       $this = jQuery(elm);
-      var name = $this.attr("value");
       $.post({
-      url:"/stop",
+      url:"/buyFrist",
       dataType:"json",
-      data:{name:name},
+      data:{name:1111},
       success:function(data) {
         alert(data.desc)
       },
@@ -59,5 +56,20 @@
       })
 
    }
+   function  buyLast(elm) {
+       $this = jQuery(elm);
+       $.post({
+           url:"/buyLast",
+           dataType:"json",
+           data:{name:1111},
+           success:function(data) {
+               alert(data.desc)
+           },
+           error:function() {
+               alert("系统异常")
+           }
 
+       })
+
+   }
 </script>

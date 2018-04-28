@@ -18,4 +18,6 @@ public class PetDataRequest extends BaseRequest {
     private List<String> petIds;
     private String lastAmount;
     private String lastRareDegree;
+    private  String filterCondition;
+
 }

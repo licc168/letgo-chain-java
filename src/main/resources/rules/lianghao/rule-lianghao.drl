@@ -1,0 +1,206 @@
+package com.licc.letsgo
+import com.licc.letsgo.model.Rule
+import com.licc.letsgo.services.LetsgoService
+import com.licc.letsgo.util.SpringContext
+import com.licc.letsgo.res.petdetail.PetDetailData
+import com.licc.letsgo.util.ResponseVo
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.licc.letsgo.model.User
+dialect  "mvel"
+global com.licc.letsgo.services.LetsgoService letsgoService;
+global com.licc.letsgo.model.User user;
+global org.slf4j.Logger logger;
+import com.licc.letsgo.res.petdata.PetsOnSale
+
+rule "连续数字-规则"
+ salience 1
+    when
+      sale:Rule((Float.parseFloat(petsOnSale.amount)<islianghao(petsOnSale.id,petsOnSale.rareDegree,Float.parseFloat(petsOnSale.amount),logger,sale.petsOnSale.generation)))
+    then
+      letsgoService.buyAll("连续数字-规则",sale.getPetsOnSale(),user);
+end
+
+//连续数字
+function  float islianghao(String id,int rareDegree,float amount ,Logger logger,int generation){
+if(generation==0){
+    switch (rareDegree){
+       case 0:
+            if(lixushuzi(0,7,id,rareDegree,amount,logger)) { return 500000; }
+            if(lixushuzi(0,6,id,rareDegree,amount,logger)) { return 150000; }
+            if(lixushuzi(0,5,id,rareDegree,amount,logger)) { return 150000; }
+            if(lixushuzi(0,4,id,rareDegree,amount,logger)) { return 5000; }
+            if(lixushuzi(1,7,id,rareDegree,amount,logger)) { return 500000; }
+            if(lixushuzi(1,6,id,rareDegree,amount,logger)) { return 150000; }
+            if(lixushuzi(1,5,id,rareDegree,amount,logger)) { return 10000; }
+            if(lixushuzi(1,4,id,rareDegree,amount,logger)) { return 500; }
+            break;
+        case 1:
+          if(lixushuzi(0,7,id,rareDegree,amount,logger)) { return 500000; }
+          if(lixushuzi(0,6,id,rareDegree,amount,logger)) { return 150000; }
+          if(lixushuzi(0,5,id,rareDegree,amount,logger)) { return 150000; }
+          if(lixushuzi(0,4,id,rareDegree,amount,logger)) { return 5000; }
+          if(lixushuzi(1,7,id,rareDegree,amount,logger)) { return 500000; }
+          if(lixushuzi(1,6,id,rareDegree,amount,logger)) { return 150000; }
+          if(lixushuzi(1,5,id,rareDegree,amount,logger)) { return 10000; }
+          if(lixushuzi(1,4,id,rareDegree,amount,logger)) { return 500; }
+        break;
+        case 2:
+            if(lixushuzi(0,7,id,rareDegree,amount,logger)) { return 500000; }
+            if(lixushuzi(0,6,id,rareDegree,amount,logger)) { return 80000; }
+            if(lixushuzi(0,5,id,rareDegree,amount,logger)) { return 20000; }
+            if(lixushuzi(0,4,id,rareDegree,amount,logger)) { return 3000; }
+            if(lixushuzi(1,7,id,rareDegree,amount,logger)) { return 500000; }
+            if(lixushuzi(1,6,id,rareDegree,amount,logger)) { return 80000; }
+            if(lixushuzi(1,5,id,rareDegree,amount,logger)) { return 10000; }
+
+            if(lixushuzi(1,4,id,rareDegree,amount,logger)) { return 1000; }
+        break;
+        case 3:
+            if(lixushuzi(0,7,id,rareDegree,amount,logger)) { return 500000; }
+            if(lixushuzi(0,6,id,rareDegree,amount,logger)) { return 150000; }
+            if(lixushuzi(0,5,id,rareDegree,amount,logger)) { return 85000; }
+
+            if(lixushuzi(0,4,id,rareDegree,amount,logger)) { return 10000; }
+            if(lixushuzi(1,7,id,rareDegree,amount,logger)) { return 500000; }
+            if(lixushuzi(1,6,id,rareDegree,amount,logger)) { return 150000; }
+            if(lixushuzi(1,5,id,rareDegree,amount,logger)) { return 85000; }
+
+            if(lixushuzi(1,4,id,rareDegree,amount,logger)) { return 8000; }
+          }
+}
+    return 1;
+}
+
+//判断是否是连续数字
+function boolean lixushuzi(int type,int weishu,String id,int rareDegree,float amount ,Logger logger){
+
+  boolean flag =false;
+  if(type==0){
+    switch (weishu){
+    case 4: flag =  id.matches("\\d{4}(\\d)\\1{3}");break;
+    case 5: flag =  id.matches("\\d{3}(\\d)\\1{4}");break;
+    case 6: flag =  id.matches("\\d{2}(\\d)\\1{5}");break;
+    case 7: flag =  id.matches("\\d{1}(\\d)\\1{6}");break;
+    case 8: flag =  id.matches("(\\d)\\1{7}}");break;
+    }
+  }else{
+
+  switch (weishu){
+      case 4: flag =  id.matches("(\\d)\\1{3}\\d{4}");break;
+      case 5: flag =  id.matches("(\\d)\\1{4}\\d{3}");break;
+      case 6: flag =  id.matches("(\\d)\\1{5}\\d{2}");break;
+      case 7: flag =  id.matches("(\\d)\\1{6}\\d{1}");break;
+      case 8: flag =  id.matches("(\\d)\\1{7}}");break;
+      }
+
+  }
+  if(flag){
+  logger.info("连续数字规则-"+weishu+"：【id:"+id+"】【金额:"+amount+"】【级别:"+rareDegree+"】");
+  }
+  return flag;
+}
+rule "吉利数字-规则"
+  salience 1
+    when
+      sale:Rule(jilishuzi(sale.petsOnSale,logger))
+    then
+      letsgoService.buyAll("吉利数字-规则",sale.getPetsOnSale(),user);
+end
+
+
+function boolean jilishuzi(PetsOnSale petsale,Logger logger){
+    boolean flag = false;
+    String id = petsale.getId();
+    int rareDegree = petsale.getRareDegree();
+    Float amount = Float.parseFloat(petsale.getAmount());
+    if("12345678".equals(id)){
+       flag = amount<2000000;
+    }
+    if(!flag&&"13141314".equals(id)){
+      flag = amount<300000;
+    }
+    if(!flag&&"01314520".equals(id)){
+      flag = amount<200000;
+    }
+    if(!flag&&"01234567".equals(id)){
+       flag = amount<200000;
+    }
+    if(!flag&&"12345670".equals(id)){
+        flag = amount<100000;
+    }
+    if(!flag&&"00123456".equals(id)){
+       flag = amount<200000;
+    }
+    if(!flag&&"12345600".equals(id)){
+                   flag = amount<100000;
+             }
+    if(!flag&&"00012345".equals(id)){
+          flag = amount<200000;
+    }
+  if(!flag&&"12345000".equals(id)){
+               flag = amount<100000;
+         }
+    if(!flag&&("00001234".equals(id)||"12340000".equals(id))){
+        flag = amount<200000;
+    }
+    if(!flag&&"22222222".equals(id)){
+       flag = amount<2000000;
+    }
+    if(!flag&&"22334455".equals(id)){
+           flag = amount<50000;
+    }
+    if(!flag&&"11223344".equals(id)){
+                     flag = amount<50000;
+           }
+    if(!flag&&"11122233".equals(id)){
+               flag = amount<50000;
+           }
+    if(!flag&&"22233344".equals(id)){
+             flag = amount<20000;
+         }
+    if(!flag&&"11666888".equals(id)){
+                 flag = amount<20000;
+     }
+     if(!flag&&id.matches("(\\d)\\1{3}(\\d)\\2{3}")){
+         switch (rareDegree){
+         case 0:flag = amount<10000;break;
+         case 1:flag = amount<10000;break;
+         case 2:flag = amount<20000;break;
+         case 3:flag = amount<60000;break;
+         case 4:flag = amount<60000;break;
+         }
+     }
+     if(!flag&&id.matches("(\\d)\\1{3}(\\d{2})\\2{1}")){
+             switch (rareDegree){
+             case 0:flag = amount<6000;break;
+             case 1:flag = amount<6000;break;
+             case 2:flag = amount<10000;break;
+             case 3:flag = amount<30000;break;
+             case 4:flag = amount<30000;break;
+             }
+
+     }
+
+        if(!flag&&id.matches("\\d{2}(\\d)\\1{2}(\\d)\\2{2}")){
+               switch (rareDegree){
+               case 0:flag = amount<2000;break;
+               case 1:flag = amount<2000;break;
+               case 2:flag = amount<3000;break;
+               case 3:flag = amount<30000;break;
+               case 4:flag = amount<30000;break;
+               }
+
+               }
+        if(!flag&&id.matches("00(\\d)\\1{2}(\\d)\\2{2}")){
+           switch (rareDegree){
+           case 0:flag = amount<5000;break;
+           case 1:flag = amount<5000;break;
+           case 2:flag = amount<5000;break;
+           case 3:flag = amount<20000;break;
+           case 4:flag = amount<20000;break;
+           }
+
+                       }
+    return flag;
+}

@@ -129,6 +129,7 @@
 			<artifactId>drools-templates</artifactId>
 			<version>${drools.version}</version>
 		</dependency>
+
   </dependencies>
 
 	<build>
@@ -144,6 +145,8 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<meminitial>512m</meminitial>
+					<maxmem>1048m</maxmem>
 				</configuration>
 			</plugin>
 		</plugins>

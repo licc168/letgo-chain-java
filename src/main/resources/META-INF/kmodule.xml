@@ -2,11 +2,18 @@
 <kmodule
   xmlns="http://www.drools.org/xsd/kmodule">
 
-
-  <kbase name="buyRuleKB" packages="rules.basebuy">
-    <ksession name="buyRuleKS"/>
+  <kbase name="rule-raredegreeKB" packages="rules.raredegree">
+    <ksession name="rule-raredegreeKS"/>
   </kbase>
-  <kbase name="buyDetailRuleKB" packages="rules.attrbuy">
-    <ksession name="buyDetailRuleKS"/>
+  <kbase name="rule-birthKB" packages="rules.birth">
+    <ksession name="rule-birthKS"/>
+  </kbase>
+  <kbase name="rule-lianghaoKB" packages="rules.lianghao">
+    <ksession name="rule-lianghaoKS"/>
+  </kbase>
+
+
+  <kbase name="rule-attrKB" packages="rules.attrbuy">
+    <ksession name="rule-attrKS"/>
   </kbase>
 </kmodule>

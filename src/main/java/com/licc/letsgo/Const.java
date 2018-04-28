@@ -1,5 +1,12 @@
 package com.licc.letsgo;
 
+import com.licc.letsgo.res.petdata.PetsOnSale;
+
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.*;
+
 /**
  * @author 项目常量定义
  * @version 1.0.0
@@ -11,19 +18,27 @@ public class Const {
   public static final  String REDIS_USEFUL_PROXY = "useful_proxy";
 
   /**莱茨狗单个可用代理IP***/
-  public static final  String REDIS_PROXY_IP = "letgo_poxy_ip";
+  public static final  String REDIS_PROXY_IP = "jspider:letgo_poxy_ip";
 
   /**莱茨狗可用代理IP池***/
-  public static final  String REDIS_PROXY_LIST = "letgo_poxy_list";
+  public static final  String REDIS_PROXY_LIST = "jspider:letgo_poxy_list";
 
   /**抓狗开关***/
-  public static final  String REDIS_LETGO_ENABLE = "letgo_enable";
-
-
-  public static final  String REDIS_BUY_LETGO_SUCCESS = "buy_letgo_success";
-  public static final  String REDIS_BUY_LETGO_FAIL = "buy_letgo_fail";
-  public static final  String REDIS_BUY_CACHE_ID = "buy_cache_id";
+  public static final  String REDIS_LETGO_ENABLE = "jspider:letgo_enable:";
+  public static final  String REDIS_BUY_LETGO_SUCCESS = "jspider:buy_letgo_success";
+  public static final  String REDIS_BUY_LETGO_FAIL = "jspider:buy_letgo_fail";
   /**验证码***/
-  public static final  String REDIS_CAPTCHAS = "captchas";
+  public static final  String REDIS_CAPTCHAS = "jspider:captchas";
+  public static Map<String, Boolean> cache = new ConcurrentHashMap<>(10000);
+  public static ConcurrentLinkedQueue<String> proxyQueue = new ConcurrentLinkedQueue<String>();
+  public static ConcurrentLinkedQueue<String> proxyQueueBak = new ConcurrentLinkedQueue<String>();
+  public static ConcurrentLinkedQueue<String> proxyQueueBakBak = new ConcurrentLinkedQueue<String>();
+
+  public static Map<String, String> proxyCache = new ConcurrentHashMap<String,String>();
+
+  public static LinkedBlockingDeque<PetsOnSale> saleQueue  = new LinkedBlockingDeque<>(1000);
+
+  public static boolean proxyFlag = true;
+
 
 }

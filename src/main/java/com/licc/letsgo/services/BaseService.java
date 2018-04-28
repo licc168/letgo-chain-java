@@ -1,5 +1,6 @@
 package com.licc.letsgo.services;
 
+import com.licc.letsgo.interceptor.TokenInterceptor;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketAddress;
@@ -30,41 +31,27 @@ public class BaseService {
 
 
 
-    RestTemplate getRestTemplate(String proxyIp) {
+    RestTemplate getRestTemplate(String proxyIp,int readTime,int connectTime) {
         RestTemplate restTemplate;
+        SimpleClientHttpRequestFactory httpRequestFactory = new SimpleClientHttpRequestFactory();
+
         if (!StringUtils.isEmpty(proxyIp)) {
-            SimpleClientHttpRequestFactory httpRequestFactory = new SimpleClientHttpRequestFactory();
-            httpRequestFactory.setReadTimeout(200);
-            httpRequestFactory.setConnectTimeout(200);
+            httpRequestFactory.setReadTimeout(readTime);
+            httpRequestFactory.setConnectTimeout(connectTime);
             String[] ips = proxyIp.split(":");
             SocketAddress address = new InetSocketAddress(ips[0], Integer.parseInt(ips[1]));
             Proxy proxy = new Proxy(Proxy.Type.HTTP, address);
             httpRequestFactory.setProxy(proxy);
             restTemplate = new RestTemplate(httpRequestFactory);
         } else {
-            restTemplate = new RestTemplate();
+            httpRequestFactory.setReadTimeout(10000);
+            httpRequestFactory.setConnectTimeout(10000);
+            restTemplate = new RestTemplate(httpRequestFactory);
 
         }
+        restTemplate.getInterceptors().add(new TokenInterceptor());
         return restTemplate;
     }
 
-    public  String getProxyIp(String key) {
-        try {
-            switch (key) {
-                case Const.REDIS_PROXY_IP:
-                    return (String) redisTemplate.opsForValue().get(key);
-
-                case Const.REDIS_PROXY_LIST:
-                    return (String) redisTemplate.opsForList().leftPop(key);
-
-                default:
-                    return null;
-
-            }
-        }catch (Exception e){
-            logger.error("获取代理数据异常");
-            return null;
-        }
-    }
 
 }

@@ -14,6 +14,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -33,7 +34,8 @@ public class CacheConfig extends CachingConfigurerSupport {
   public CacheManager cacheManager(RedisTemplate redisTemplate) {
     RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
     // Number of seconds before expiration. Defaults to unlimited (0)
-    cacheManager.setDefaultExpiration(10); //设置key-value超时时间
+    cacheManager.setDefaultExpiration(20); //设置key-value超时时间
+
     return cacheManager;
   }
 
@@ -95,6 +97,11 @@ public class CacheConfig extends CachingConfigurerSupport {
    */
   @Bean
   public ValueOperations<String, Object> valueOperations(RedisTemplate<String, Object> redisTemplate) {
+
     return redisTemplate.opsForValue();
+  }
+  @Bean
+  public SetOperations<String, Object> setOperations(RedisTemplate<String, Object> redisTemplate) {
+    return redisTemplate.opsForSet();
   }
 }

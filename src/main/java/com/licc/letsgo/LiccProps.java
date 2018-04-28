@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class LiccProps {
   private List<User> users = new ArrayList<>();
   private String petUrl;
+  private String codeUrl;
 }
 
 

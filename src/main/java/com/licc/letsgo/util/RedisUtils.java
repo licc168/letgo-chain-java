@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,8 @@ public class RedisUtils {
     protected ValueOperations<String, Object>        valueOperations;
     @Resource
     protected ListOperations<String, Object>         listOperations;
+    @Resource
+    protected SetOperations<String, Object>          setOperations;
 
     /**
      * 查询key,支持模糊查询
@@ -172,4 +175,20 @@ public class RedisUtils {
         long length = listOperations.size(key);
         return listOperations.range(key, 0, length);
     }
+
+    /*********************** SET 操作 *************************/
+    public void sadd(String key, Object value) {
+
+        setOperations.add(key, value);
+    }
+
+    public Object spop(String key) {
+        return setOperations.pop(key);
+
+    }
+
+    public  Long ssize(String key){
+        return   setOperations.size( key);
+    }
+
 }
