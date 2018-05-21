@@ -3,6 +3,9 @@ package com.licc.letsgo.controller;
 import com.licc.letsgo.Const;
 import com.licc.letsgo.LiccProps;
 import com.licc.letsgo.model.User;
+import com.licc.letsgo.req.PetListReq;
+import com.licc.letsgo.res.list.PetLets;
+import com.licc.letsgo.res.list.PetListRes;
 import com.licc.letsgo.services.LetsgoService;
 import com.licc.letsgo.util.RedisUtils;
 
@@ -71,5 +74,18 @@ public class PetController {
         List<Object> list = redisUtils.lgetAll(Const.REDIS_BUY_LETGO_FAIL);
         model.put("list", list);
         return "buymsg";
+    }
+    @RequestMapping(value = "/getChain", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseVo buyfail(@RequestParam  String petId,@RequestParam  String cookie) {
+        ResponseVo responseVo = letsgoService.getPetChain(petId,cookie);
+         return responseVo;
+    }
+
+    @RequestMapping(value = "/listsLet", method = RequestMethod.GET)
+    public String buyfail(PetListReq req, User user, Map<String, Object> model) {
+            model.put("list", letsgoService.getPetLists(user));
+            model.put("cookie", user.getCookie());
+        return "listsLet";
     }
 }

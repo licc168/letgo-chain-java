@@ -1,9 +1,14 @@
 package com.licc.letsgo.services;
 
-import com.licc.letsgo.req.ConfirmBuyReq;
+import com.licc.letsgo.req.*;
+import com.licc.letsgo.res.list.PetLets;
+import com.licc.letsgo.res.list.PetLetsDataList;
+import com.licc.letsgo.res.list.PetListRes;
+import com.licc.letsgo.res.petchains.PetChainsRes;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +39,6 @@ import com.licc.letsgo.LiccProps;
 import com.licc.letsgo.enums.PetsSortingEnum;
 import com.licc.letsgo.model.Captcha;
 import com.licc.letsgo.model.User;
-import com.licc.letsgo.req.BuyReq;
-import com.licc.letsgo.req.CaptchaReq;
-import com.licc.letsgo.req.PetDataRequest;
-import com.licc.letsgo.req.PetDetailReq;
 import com.licc.letsgo.res.BaseRes;
 import com.licc.letsgo.res.captcha.CaptchaData;
 import com.licc.letsgo.res.captcha.CaptchaRes;
@@ -281,7 +283,81 @@ public class LetsgoService extends BaseService {
     }
 
     /**
-     * 通过redis 获取验证码接口 预先生成好
+     * 获取狗信息链接
+     */
+
+     public ResponseVo<PetChainsRes>  getPetChain(String petId,String cookie){
+
+         try {
+
+         PetChainsReq petChainsReq =  new PetChainsReq();
+         petChainsReq.setPetId(petId);
+         petChainsReq.setAppId(1);
+         petChainsReq.setTpl("");
+         petChainsReq.setRequestId(System.currentTimeMillis());
+         RequestEntity<PetChainsReq> requestEntity = RequestEntity.post(new URI(liccProps.getPetUrl()+"data/pet/history"))
+             .header("Cookie", cookie)  .contentType(MediaType.APPLICATION_JSON).body(petChainsReq);
+         ResponseEntity<PetChainsRes> res = getRestTemplate(null, 10000, 10000).exchange(requestEntity, PetChainsRes.class);
+         PetChainsRes petChainsRes =    res.getBody();
+         if("00".equals(petChainsRes.getErrorNo())){
+             System.out.println(petChainsRes);
+         }
+             return  ResponseVoUtil.successData(petChainsRes);
+         } catch (URISyntaxException e) {
+             logger.error("验证码接口-getCaptcha异常" + e.getMessage());
+             return  ResponseVoUtil.failResult("");
+         }
+
+     }
+
+
+    /**
+     * 获取狗信息链接
+     */
+
+    public ResponseVo<PetListRes>  getPetListApi(PetListReq req,User user){
+
+        try {
+
+            req.setAppId(1);
+            req.setTpl("");
+            req.setRequestId(System.currentTimeMillis());
+            RequestEntity<PetListReq> requestEntity = RequestEntity.post(new URI(liccProps.getPetUrl()+"data/user/pet/list"))
+                    .header("Cookie", user.getCookie())  .contentType(MediaType.APPLICATION_JSON).body(req);
+            ResponseEntity<PetListRes> res = getRestTemplate(null, 10000, 10000).exchange(requestEntity, PetListRes.class);
+            PetListRes petChainsRes =    res.getBody();
+            if("00".equals(petChainsRes.getErrorNo())){
+                System.out.println(petChainsRes);
+            }
+            return  ResponseVoUtil.successData(petChainsRes);
+        } catch (URISyntaxException e) {
+            logger.error("查询接口失败" + e.getMessage());
+            return  ResponseVoUtil.failResult("查询接口失败");
+        }
+
+    }
+
+
+    public List<PetLetsDataList>  getPetLists(User user){
+        List<PetLetsDataList>   petLetsDataLists = new LinkedList<>();
+
+        try {
+            PetListReq req = new PetListReq();
+            PetLets pet =   this.getPetListApi(req,user).getData().getData();
+            int pageSize = pet.getTotalCount()/pet.getPageSize()+1;
+            for(int i = 1;i<=pageSize;i++){
+                req.setPageNo(i);
+                List<PetLetsDataList>   list =   this.getPetListApi(req,user).getData().getData().getDataList();
+                petLetsDataLists.addAll(list);
+            }
+        } catch (Exception e) {
+            logger.error("查询接口失败" + e.getMessage());
+
+        }
+        return petLetsDataLists;
+    }
+    /**
+     * 通过缓存
      *
      * @param user
      * @return

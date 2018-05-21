@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>首页</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link th:href="@{webjars/bootstrap/3.3.7/css/bootstrap-theme.css}" rel="stylesheet"/>
+    <link th:href="@{webjars/bootstrap/3.3.7/css/bootstrap.css}" rel="stylesheet"/>
+
+</head>
+
+<body>
+
+<div th:each="pet: ${list}">
+    <div>
+        <label>id</label> <span th:text="${pet.id}"></span>
+        <label>级别</label> <span th:text="${pet.rareDegree}"></span>
+        <label>generation</label> <span th:text="${pet.generation}"></span>
+        <label>coolingInterval</label> <span th:text="${pet.coolingInterval}"></span>
+        <label>petId</label>  <a  th:href="@{'/getChain?petId='+${pet.petId}+'&cookie='+${cookie}}" target="_blank" th:text="${pet.petId}"></a>
+    </div>
+    <div style="width: 150px;height: 300px">
+        <img  th:src="${pet.petUrl}">
+    </div>
+</div>
+
+
+</body>
+
+</html>
+<script src="/static/js/jquery-3.3.1.min.js"></script>
+<script>
+
+    function buyFrist(elm) {
+        $this = jQuery(elm);
+        $.post({
+            url: "/buyFrist",
+            dataType: "json",
+            data: {name: 1111},
+            success: function (data) {
+                alert(data.desc)
+            },
+            error: function () {
+                alert("系统异常")
+            }
+
+        })
+
+    }
+
+    function buyLast(elm) {
+        $this = jQuery(elm);
+        $.post({
+            url: "/buyLast",
+            dataType: "json",
+            data: {name: 1111},
+            success: function (data) {
+                alert(data.desc)
+            },
+            error: function () {
+                alert("系统异常")
+            }
+
+        })
+
+    }
+</script>

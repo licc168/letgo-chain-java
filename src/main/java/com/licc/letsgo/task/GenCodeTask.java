@@ -28,7 +28,7 @@ import com.licc.letsgo.util.RedisUtils;
  * @date 2018/3/22 14:29
  * @see
  */
-@Component
+
 public class GenCodeTask {
     final Logger logger = LoggerFactory.getLogger(this.getClass());
 

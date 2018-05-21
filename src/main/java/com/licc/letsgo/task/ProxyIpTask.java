@@ -24,7 +24,7 @@ import com.licc.letsgo.util.ResponseVo;
 /**
  * @author lichangchao
  */
-@Component
+
 public class ProxyIpTask {
     final Logger  logger = LoggerFactory.getLogger(this.getClass());
 
